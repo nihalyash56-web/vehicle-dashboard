@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vehicle Analytics Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Header -->
+        <header class="glass-header">
+            <div class="header-left">
+                <div class="logo">
+                    <i class="fas fa-car"></i>
+                    <span>Vehicle<span class="logo-accent">Analytics</span></span>
+                </div>
+                <div class="date-time">
+                    <i class="far fa-clock"></i>
+                    <span id="current-time">Loading...</span>
+                </div>
+            </div>
+            
+            <div class="header-center">
+                <div class="vehicle-selector">
+                    <div class="selector-icon">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <input type="text" id="vehicle-search" placeholder="Search Vehicle No...">
+                    <button class="search-btn">
+                        <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="header-right">
+                <button class="icon-btn glass-btn">
+                    <i class="fas fa-sync-alt"></i>
+                </button>
+                <button class="icon-btn glass-btn">
+                    <i class="fas fa-cog"></i>
+                </button>
+                <div class="user-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Dashboard -->
+        <main class="dashboard-main">
+            <!-- Left Panel - Stats -->
+            <div class="left-panel">
+                <!-- Vehicle Info Card -->
+                <div class="glass-card large-card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-info-circle"></i> Vehicle Information</h3>
+                        <div class="card-actions">
+                            <button class="mini-btn"><i class="fas fa-edit"></i></button>
+                            <button class="mini-btn"><i class="fas fa-expand"></i></button>
+                        </div>
+                    </div>
+                    <div class="vehicle-info">
+                        <div class="vehicle-image">
+                            <div class="car-placeholder">
+                                <i class="fas fa-car-side"></i>
+                            </div>
+                            <div class="vehicle-badge">Jaguar I-Pace</div>
+                        </div>
+                        <div class="vehicle-details">
+                            <div class="detail-row">
+                                <span class="detail-label">Vehicle No:</span>
+                                <span class="detail-value" id="vehicle-no">TN-01-AB-1234</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="detail-label">Chassis No:</span>
+                                <span class="detail-value" id="chassis-no">CHS1234567890</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="detail-label">Model:</span>
+                                <span class="detail-value" id="vehicle-model">I-Pace 2023</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="detail-label">Manufacturer:</span>
+                                <span class="detail-value" id="manufacturer">Jaguar</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="detail-label">Last Updated:</span>
+                                <span class="detail-value" id="last-updated">26 Dec 2025, 17:45:56</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Trip Statistics -->
+                <div class="glass-card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-chart-line"></i> Trip Statistics</h3>
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <div class="stat-icon">
+                                <i class="fas fa-road"></i>
+                            </div>
+                            <div class="stat-info">
+                                <span class="stat-label">Total Distance</span>
+                                <span class="stat-value" id="total-distance">784.4 km</span>
+                            </div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-icon">
+                                <i class="fas fa-gas-pump"></i>
+                            </div>
+                            <div class="stat-info">
+                                <span class="stat-label">Total Fuel</span>
+                                <span class="stat-value" id="total-fuel">106.23 L</span>
+                            </div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-icon">
+                                <i class="fas fa-tachometer-alt"></i>
+                            </div>
+                            <div class="stat-info">
+                                <span class="stat-label">Fuel Efficiency</span>
+                                <span class="stat-value" id="fuel-efficiency">7.38 km/L</span>
+                            </div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-icon">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div class="stat-info">
+                                <span class="stat-label">Engine Hours</span>
+                                <span class="stat-value" id="engine-hours">45.6 Hr</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Center Panel - Map & Main Metrics -->
+            <div class="center-panel">
+                <!-- Map Container -->
+                <div class="glass-card large-card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-map-marked-alt"></i> Live Vehicle Location</h3>
+                        <div class="map-controls">
+                            <button class="map-btn"><i class="fas fa-plus"></i></button>
+                            <button class="map-btn"><i class="fas fa-minus"></i></button>
+                            <button class="map-btn"><i class="fas fa-crosshairs"></i></button>
+                        </div>
+                    </div>
+                    <div id="map-container"></div>
+                    <div class="map-info">
+                        <div class="map-stat">
+                            <span>Current Speed:</span>
+                            <strong id="current-speed">65 km/h</strong>
+                        </div>
+                        <div class="map-stat">
+                            <span>Max Speed:</span>
+                            <strong id="max-speed">120 km/h</strong>
+                        </div>
+                        <div class="map-stat">
+                            <span>Status:</span>
+                            <span class="status-indicator active">Moving</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Odometer & Fuel Metrics -->
+                <div class="metrics-row">
+                    <div class="glass-card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-tachometer-alt"></i> Odometer</h3>
+                        </div>
+                        <div class="odometer-display">
+                            <div class="odo-start">
+                                <span class="odo-label">Start</span>
+                                <span class="odo-value" id="odo-start">12045 km</span>
+                            </div>
+                            <div class="odo-arrow">
+                                <i class="fas fa-long-arrow-alt-right"></i>
+                            </div>
+                            <div class="odo-end">
+                                <span class="odo-label">End</span>
+                                <span class="odo-value" id="odo-end">12830 km</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="glass-card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-gas-pump"></i> Fuel Analytics</h3>
+                        </div>
+                        <div class="fuel-analytics">
+                            <div class="fuel-item">
+                                <span class="fuel-label">Consumed Idling</span>
+                                <span class="fuel-value danger">15.2 L</span>
+                            </div>
+                            <div class="fuel-item">
+                                <span class="fuel-label">Idling Duration</span>
+                                <span class="fuel-value">2.4 Hr</span>
+                            </div>
+                            <div class="fuel-item">
+                                <span class="fuel-label">Fuel Loss</span>
+                                <span class="fuel-value warning">3.5 L</span>
+                            </div>
+                            <div class="fuel-item">
+                                <span class="fuel-label">Low Fuel Instances</span>
+                                <span class="fuel-value">3</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Panel - Additional Info -->
+            <div class="right-panel">
+                <!-- Speed & Performance -->
+                <div class="glass-card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-running"></i> Performance</h3>
+                    </div>
+                    <div class="speed-meter">
+                        <div class="speed-gauge">
+                            <div class="gauge-background">
+                                <div class="gauge-fill" id="speed-fill"></div>
+                            </div>
+                            <div class="speed-value">
+                                <span id="speed-text">65</span>
+                                <span class="speed-unit">km/h</span>
+                            </div>
+                        </div>
+                        <div class="speed-stats">
+                            <div class="speed-stat">
+                                <span>Average</span>
+                                <strong>58 km/h</strong>
+                            </div>
+                            <div class="speed-stat">
+                                <span>Max</span>
+                                <strong class="warning">120 km/h</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Engine & Idle Hours -->
+                <div class="glass-card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-cogs"></i> Engine Analytics</h3>
+                    </div>
+                    <div class="engine-metrics">
+                        <div class="metric-bar">
+                            <div class="metric-label">
+                                <span>Total Engine Hours</span>
+                                <span class="metric-value">45.6 Hr</span>
+                            </div>
+                            <div class="bar-container">
+                                <div class="bar-fill" style="width: 65%"></div>
+                            </div>
+                        </div>
+                        <div class="metric-bar">
+                            <div class="metric-label">
+                                <span>Idling Hours</span>
+                                <span class="metric-value">2.4 Hr</span>
+                            </div>
+                            <div class="bar-container">
+                                <div class="bar-fill warning" style="width: 15%"></div>
+                            </div>
+                        </div>
+                        <div class="metric-bar">
+                            <div class="metric-label">
+                                <span>Running Efficiency</span>
+                                <span class="metric-value">94.7%</span>
+                            </div>
+                            <div class="bar-container">
+                                <div class="bar-fill success" style="width: 95%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Trips -->
+                <div class="glass-card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-history"></i> Recent Trips</h3>
+                    </div>
+                    <div class="trip-list">
+                        <div class="trip-item">
+                            <div class="trip-date">26 Dec 2025</div>
+                            <div class="trip-details">
+                                <span>15:30 - 17:45</span>
+                                <span>78.4 km • 12.4 L</span>
+                            </div>
+                        </div>
+                        <div class="trip-item">
+                            <div class="trip-date">25 Dec 2025</div>
+                            <div class="trip-details">
+                                <span>09:15 - 12:30</span>
+                                <span>124.6 km • 18.2 L</span>
+                            </div>
+                        </div>
+                        <div class="trip-item">
+                            <div class="trip-date">24 Dec 2025</div>
+                            <div class="trip-details">
+                                <span>14:00 - 16:45</span>
+                                <span>92.3 km • 14.8 L</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Bottom Controls -->
+        <footer class="dashboard-footer">
+            <div class="control-panel">
+                <button class="control-btn active">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                </button>
+                <button class="control-btn">
+                    <i class="fas fa-map"></i>
+                    <span>Route History</span>
+                </button>
+                <button class="control-btn">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Analytics</span>
+                </button>
+                <button class="control-btn">
+                    <i class="fas fa-file-export"></i>
+                    <span>Reports</span>
+                </button>
+                <button class="control-btn">
+                    <i class="fas fa-database"></i>
+                    <span>Data Source</span>
+                </button>
+            </div>
+        </footer>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
